@@ -20,6 +20,9 @@ pnpm dev            # server :3000 + client :5173 (proxy /api, /ws)
 # hoặc: docker compose up --build  → http://localhost:8080
 ```
 
+Địa hình chân thực (tùy chọn): `pnpm textures` tải texture cỏ + đá CC0 từ [Poly Haven](https://polyhaven.com/)
+vào `apps/client/public/textures/` (`pnpm textures 2k` để lấy bản nét hơn). Không có file thì game dùng màu toon như cũ.
+
 Mở `http://localhost:5173` trên điện thoại (cùng mạng LAN) hoặc DevTools ở chế độ thiết bị ngang 844×390.
 
 ## Test

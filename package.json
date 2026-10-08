@@ -7,6 +7,7 @@
     "dev": "pnpm --filter @army3d/shared build && pnpm -r --parallel --filter @army3d/server --filter @army3d/client dev",
     "test": "pnpm -r --filter @army3d/shared --filter @army3d/server test",
     "test:e2e": "pnpm --filter @army3d/client test:e2e",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "textures": "node scripts/fetch-polyhaven.mjs"
   }
 }

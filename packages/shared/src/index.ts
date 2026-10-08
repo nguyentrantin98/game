@@ -6,3 +6,4 @@ export * from './weapons';
 export * from './battle';
 export * from './bot';
 export * from './protocol';
+export * as Chess from './chess';

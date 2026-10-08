@@ -1,4 +1,13 @@
-# ARMY 3D · PHÁO CHIẾN ĐỘI
+# VUA CỜ · 棋王
+
+Game cờ nhiều thể loại với tướng lĩnh thần thoại Trung Hoa (Thiên Đình ⚔ Yêu Giới): **Cờ Tướng, Cờ Úp (揭棋), Cờ Vua, Cờ Caro**.
+Đấu với máy (3 mức) hoặc 2 người 1 máy, đi lại, cảnh giao chiến khi ăn quân, hiệu ứng khi đi quân.
+Luật + AI: `packages/shared/src/chess.ts`; giao diện: `apps/client/src/chess/`.
+Model 3D / ảnh nhân vật: xem `apps/client/public/models/README.md`.
+
+---
+
+## (Cũ) ARMY 3D · PHÁO CHIẾN ĐỘI
 
 Game bắn pháo theo lượt 3D cho điện thoại (Web mobile / PWA, chơi ngang), xây theo `docs/PROMPT_ARMY3D.md`
 và file thiết kế `docs/design/army3d-design.html`.

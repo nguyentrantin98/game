@@ -236,3 +236,89 @@ input[type='range'].game-range::-moz-range-thumb {
     transform: translateX(2px) rotate(2deg);
   }
 }
+
+/* ───────── VUA CỜ ───────── */
+.vc-bg {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(242, 169, 59, 0.18), transparent 60%),
+    radial-gradient(ellipse at 50% 120%, rgba(178, 40, 30, 0.35), transparent 60%),
+    linear-gradient(180deg, #1a0f0c, #0e0a10);
+}
+.vc-title {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  background: linear-gradient(180deg, #fff1b0, #f2a93b 55%, #a8601a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #3a1a06);
+}
+.vc-title span { font-family: var(--font-han); margin-left: 8px; }
+.vc-card {
+  display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center;
+  padding: 10px 8px 12px; border-radius: 14px; border: 1.5px solid #4a3020;
+  background: linear-gradient(180deg, #2a1a14, #170e0c); min-height: 150px;
+  box-shadow: 0 4px 0 #0b0605;
+}
+.vc-card.on { border-color: #f2a93b; box-shadow: 0 0 0 2px rgba(242,169,59,.35), 0 4px 0 #0b0605; background: linear-gradient(180deg, #4a2a14, #1f120c); }
+.vc-han { font-family: var(--font-han); font-size: 30px; color: #ffcf7a; line-height: 1.1; text-shadow: 0 2px 0 #5a1a0a; }
+.vc-seg { display: flex; border: 1px solid #4a3020; border-radius: 10px; overflow: hidden; }
+.vc-seg button { background: #1d120e; border: 0; padding: 6px 12px; color: #b9c8bc; }
+.vc-seg button.on { background: #f2a93b; color: #2a1606; font-weight: 700; }
+.vc-hero { display: flex; flex-direction: column; align-items: center; width: 92px; gap: 2px; text-align: center; }
+.vc-medal { border: 2px solid #d9a84a; background: radial-gradient(circle at 50% 35%, #fff4d6, #e7c58a 70%, #a8762a); }
+.vc-board {
+  border-radius: 6px;
+  /* vân gỗ tạo bằng SVG turbulence — không cần file ảnh */
+  background-color: #d8a868;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008 0.12' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.25 0 0 0 0 0.08 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, #e6b878, #c48a48);
+  box-shadow: 0 0 0 6px #5a2e12, 0 0 0 8px #d9a84a, 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+.vc-hit { position: absolute; transform: translate(-50%, -50%); background: transparent; border: 0; padding: 0; z-index: 3; }
+.vc-piece { position: absolute; translate: -50% -50%; pointer-events: none; z-index: 2; }
+.vc-dot { position: absolute; translate: -50% -50%; border-radius: 50%; background: rgba(60, 220, 120, 0.85); box-shadow: 0 0 8px #3cdc78; pointer-events: none; z-index: 4; }
+.vc-dot.cap { background: rgba(255, 70, 40, 0.9); box-shadow: 0 0 10px #ff4628; }
+.vc-mark { position: absolute; translate: -50% -50%; border-radius: 8px; pointer-events: none; z-index: 1; }
+.vc-mark.last { border: 2px dashed rgba(40, 120, 255, 0.8); }
+.piece {
+  position: relative; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #fff4d6, #e7c58a 70%, #a8762a);
+  box-shadow: inset 0 0 0 2px var(--ring), inset 0 0 0 4px #f6e2b0, 0 3px 0 #5a3410, 0 4px 6px rgba(0, 0, 0, 0.55);
+  transition: transform 0.15s;
+}
+.piece.selected { transform: translateY(-4px) scale(1.08); box-shadow: inset 0 0 0 2px var(--ring), 0 0 0 3px #ffd25e, 0 8px 10px rgba(0, 0, 0, 0.6); }
+.piece .portrait { position: absolute; inset: 8%; border-radius: 50%; overflow: hidden; }
+.piece .glyph {
+  position: absolute; right: -2%; bottom: -4%; width: 46%; height: 46%; border-radius: 50%;
+  display: grid; place-items: center; font-family: var(--font-han); font-weight: 700; line-height: 1;
+  background: #fff4d6; box-shadow: 0 0 0 1.5px var(--ring);
+}
+.hidden-piece { display: grid; place-items: center; font-family: var(--font-han); color: #fff4d6;
+  background: radial-gradient(circle at 50% 35%, #7a4a2a, #3a1f10); }
+.vc-turn { padding: 6px 10px; border-radius: 10px; font-weight: 700; font-size: 12px; text-align: center; }
+.vc-turn.r { background: rgba(226, 65, 47, 0.25); color: #ffb09a; border: 1px solid #e2412f; }
+.vc-turn.b { background: rgba(200, 200, 200, 0.12); color: #e9efe6; border: 1px solid #777; }
+.vc-check { font-family: var(--font-han); color: #ff5a3a; font-size: 18px; animation: vc-pulse 0.8s infinite alternate; }
+@keyframes vc-pulse { to { transform: scale(1.12); } }
+.vc-clash { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; overflow: hidden; }
+.vc-clash-bg { position: absolute; inset: 0; background:
+  repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,200,90,.12) 0 6deg, transparent 6deg 14deg),
+  radial-gradient(circle at 50% 50%, rgba(120,20,10,.85), rgba(10,5,5,.95) 70%); }
+.vc-fighter { position: absolute; top: 18%; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  filter: drop-shadow(0 0 18px rgba(255,190,80,.6)); }
+.vc-fname { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: #ffe2a0; text-shadow: 0 2px 0 #000; }
+.vc-slash { position: absolute; width: 420px; height: 10px; rotate: -25deg; border-radius: 50%;
+  background: linear-gradient(90deg, transparent, #fff 40%, #ffd25e 60%, transparent); box-shadow: 0 0 30px #ffd25e; }
+.vc-spark { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #ffe08a; box-shadow: 0 0 12px #ff9a2f; }
+.vc-ko { position: absolute; top: 8%; font-size: 64px; color: #ff3a1a; text-shadow: 0 0 20px #ffb02f, 0 4px 0 #3a0a00; }
+.vc-movefx { position: absolute; pointer-events: none; z-index: 5; }
+.vc-movefx .ring { position: absolute; translate: -50% -50%; border-radius: 50%; border: 3px solid #ffd25e;
+  box-shadow: 0 0 16px #ffb02f, inset 0 0 12px #ffb02f; animation: vc-ring 0.6s 0.25s ease-out both; }
+.vc-movefx .tag { position: absolute; translate: -50% 0; white-space: nowrap; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; color: #fff1b0; text-shadow: 0 1px 0 #000, 0 0 8px #ff8a2f; animation: vc-tag 1.1s 0.2s ease-out both; }
+@keyframes vc-ring { from { transform: scale(0.3); opacity: 1; } to { transform: scale(1); opacity: 0; } }
+@keyframes vc-tag { from { transform: translateY(-10px); opacity: 0; } 25% { opacity: 1; } to { transform: translateY(-42px); opacity: 0; } }

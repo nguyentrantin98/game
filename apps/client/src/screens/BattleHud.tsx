@@ -1,4 +1,5 @@
 import { useDrag } from '@use-gesture/react';
+import { MiniMap } from './MiniMap';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowLeftRight, ChevronLeft, ChevronRight, Flag, Footprints, Heart, Navigation, Sparkles, Zap } from 'lucide-react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -180,6 +181,11 @@ export function BattleHud() {
       {/* vùng kéo để ngắm */}
       <div {...bindDrag()} className="absolute inset-x-0 top-20 bottom-28 pointer-events-auto" style={{ touchAction: 'none' }} />
 
+      {/* mini map — kéo để xem đối thủ */}
+      <div className="absolute top-[64px] left-1/2 -translate-x-1/2">
+        <MiniMap />
+      </div>
+
       {/* thanh trên */}
       <div className="absolute inset-x-2 top-2 flex justify-between items-start">
         <TeamPanel players={team0} myId={myId} align="left" />
@@ -203,7 +209,7 @@ export function BattleHud() {
       {/* thông báo lượt */}
       <AnimatePresence>
         {turn && !replay && !st.over && (
-          <motion.div key={turn.turn} className="absolute top-[86px] left-1/2 -translate-x-1/2 font-display font-bold tracking-[0.12em] whitespace-nowrap"
+          <motion.div key={turn.turn} className="absolute top-[122px] left-1/2 -translate-x-1/2 font-display font-bold tracking-[0.12em] whitespace-nowrap"
             initial={{ opacity: 0, scale: 1.6 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             style={{ fontSize: myTurn ? 20 : 13, color: myTurn ? '#FFC86B' : '#B9C8BC', WebkitTextStroke: '3px #1a0e04', paintOrder: 'stroke fill' }}
             data-testid="turn-banner">
@@ -215,7 +221,7 @@ export function BattleHud() {
       {/* nhãn trúng / trượt */}
       <AnimatePresence>
         {hitLabel && (
-          <motion.div key={hitLabel.key} className="absolute top-[120px] left-1/2 -translate-x-1/2 font-display font-bold whitespace-nowrap"
+          <motion.div key={hitLabel.key} className="absolute top-[156px] left-1/2 -translate-x-1/2 font-display font-bold whitespace-nowrap"
             initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: [0.4, 1.25, 1], opacity: 1 }} exit={{ opacity: 0, y: -20 }}
             style={{ fontSize: 30, color: hitLabel.kind === 'hit' ? '#FFC86B' : hitLabel.kind === 'near' ? '#FF8A80' : '#B9C8BC',
               WebkitTextStroke: '4px #1a0e04', paintOrder: 'stroke fill' }}

@@ -80,7 +80,19 @@ test('luồng chính: Loading → Lobby → Chọn tướng → Trận luyện t
         await page.getByTestId('item-double').click({ timeout: 3000 }).catch(() => {});
       }
       await page.waitForTimeout(150);
-      if (fired === 0) await shot(page, '09-aim');
+      if (fired === 0) {
+        await shot(page, '09-aim');
+        // kéo mini map sang phải để xem đối thủ, rồi bấm ⟲ quay về
+        const mm = (await page.getByTestId('minimap').boundingBox())!;
+        await page.mouse.move(mm.x + mm.width * 0.3, mm.y + mm.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(mm.x + mm.width * 0.85, mm.y + mm.height / 2, { steps: 8 });
+        await page.mouse.up();
+        await page.waitForTimeout(900);
+        await shot(page, '09b-minimap-pan');
+        await page.getByRole('button', { name: 'recenter' }).click();
+        await expect(page.getByRole('button', { name: 'recenter' })).toHaveCount(0);
+      }
       // lượt có thể vừa hết giờ (20s) giữa lúc kiểm tra và bấm → thử lại vòng sau
       if (!(await fireBtn.click({ timeout: 3000 }).then(() => true, () => false))) continue;
       fired++;

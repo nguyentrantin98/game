@@ -12,7 +12,7 @@ import {
 } from '@army3d/shared';
 import { sfx, vibrate } from '../audio/sfx';
 import { finalizeShot } from '../net/battleController';
-import { pushFloater, useBattle } from '../store/battle';
+import { camView, pushFloater, useBattle } from '../store/battle';
 import { Backdrop } from './Backdrop';
 import { CharacterModel } from './CharacterModel';
 import { TerrainMesh } from './TerrainMesh';
@@ -310,7 +310,7 @@ function AimGuide() {
             <circleGeometry args={[0.25, 16]} />
             <meshBasicMaterial color={land.hit ? '#FF6B5A' : '#FFC86B'} toneMapped={false} />
           </mesh>
-          <Html position={[0, 2, 0]} center zIndexRange={[6, 0]} style={{ pointerEvents: 'none' }}>
+          <Html position={[0, land.hit ? 4.2 : 2, 0]} center zIndexRange={[6, 0]} style={{ pointerEvents: 'none' }}>
             <div className="text-[11px] font-bold whitespace-nowrap" style={{ color: land.hit ? '#FF8A80' : '#FFF3D6', WebkitTextStroke: '2.5px #0b120e', paintOrder: 'stroke fill' }}>
               {land.hit ? '🎯 TRÚNG · ' : ''}
               {Math.abs(land.x - mx).toFixed(1)}
@@ -443,12 +443,20 @@ function CameraRig() {
       target.current.set(80, 18, 150 * Math.max(1, 2 / aspect));
     } else if (camFocus.active) {
       target.current.set(camFocus.x, camFocus.y + 2, dist + 8);
+    } else if (b.camPanX !== null) {
+      // người chơi đang kéo mini map để xem chỗ khác
+      const h = b.terrain ? b.terrain.heightAt(b.camPanX) : 10;
+      target.current.set(b.camPanX, h + 6, dist);
     } else {
       const cur = st.players.find((p) => p.id === (st.currentId ?? b.myId)) ?? st.players[0];
       target.current.set(cur.x + cur.facing * 8, cur.y + 6, dist);
     }
     target.current.x = THREE.MathUtils.clamp(target.current.x, 20, 140);
-    camera.position.lerp(target.current, Math.min(1, dt * (camFocus.active ? 3.5 : 2.2)));
+    const fast = camFocus.active || (b.camPanX !== null && !overview);
+    camera.position.lerp(target.current, Math.min(1, dt * (fast ? 5 : 2.2)));
+    const cam = camera as THREE.PerspectiveCamera;
+    camView.x = camera.position.x;
+    camView.halfW = camera.position.z * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * aspect;
     const s = vfx.takeShake(dt);
     camera.position.x += (Math.random() - 0.5) * s;
     camera.position.y += (Math.random() - 0.5) * s;

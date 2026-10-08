@@ -46,6 +46,8 @@ interface BattleStore {
   hitLabel: HitLabel | null;
   floaters: Floater[];
   end: BattleEnd | null;
+  /** Tọa độ x camera do người chơi kéo mini map (null = camera tự bám). */
+  camPanX: number | null;
   set(p: Partial<BattleStore>): void;
   reset(): void;
 }
@@ -70,6 +72,7 @@ const initial = {
   hitLabel: null,
   floaters: [],
   end: null,
+  camPanX: null as number | null,
 };
 
 export const useBattle = create<BattleStore>((set) => ({
@@ -84,3 +87,6 @@ export function pushFloater(f: Omit<Floater, 'id'>) {
   useBattle.setState((s) => ({ floaters: [...s.floaters, { ...f, id }] }));
   setTimeout(() => useBattle.setState((s) => ({ floaters: s.floaters.filter((x) => x.id !== id) })), 1400);
 }
+
+/** Vùng camera đang nhìn (CameraRig ghi mỗi frame, MiniMap đọc để vẽ khung). */
+export const camView = { x: 80, halfW: 30 };

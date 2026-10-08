@@ -65,6 +65,7 @@ export function bindBattleSocket() {
     useBattle.setState({
       // deadline theo đồng hồ máy khách (tránh lệch giờ với server)
       turn: { ...t, deadline: Date.now() + TURN_SECONDS * 1000 },
+      camPanX: null,
       state: { ...b.state, currentId: t.currentId, wind: t.wind, turn: t.turn, players },
       moveMode: false,
       item: null,
@@ -78,7 +79,7 @@ export function bindBattleSocket() {
   });
 
   s.on(WS.battleShot, (res: ShotResult) => {
-    useBattle.setState({ replay: { result: res, t0: performance.now() }, hitLabel: null });
+    useBattle.setState({ replay: { result: res, t0: performance.now() }, hitLabel: null, camPanX: null });
     sfx('fire');
     // dự phòng: nếu scene không chạy (tab ẩn) vẫn chốt kết quả
     setTimeout(() => finalizeShot(res), (res.durationSteps / 60) * 1000 + 2500);

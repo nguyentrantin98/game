@@ -549,6 +549,7 @@ export function cloneState(state: BattleState): BattleState {
 /** Quỹ đạo dự đoán (chế độ Luyện tập): mô phỏng trên bản sao, không đổi state thật. */
 export function predictPath(state: BattleState, shooterId: string, input: FireInput): number[] {
   const copy = cloneState(state);
-  const res = applyFire(copy, shooterId, { ...input, item: null, mode: 'normal' });
+  const mode = input.mode === 'heavy' ? 'heavy' : 'normal';
+  const res = applyFire(copy, shooterId, { ...input, item: null, mode });
   return res.tracks[0]?.points ?? [];
 }

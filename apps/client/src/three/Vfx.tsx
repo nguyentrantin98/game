@@ -30,6 +30,8 @@ let cursor = 0;
 const bolts: { a: THREE.Vector3; b: THREE.Vector3; life: number; color: THREE.Color }[] = [];
 const flashes: { x: number; y: number; life: number; color: THREE.Color; power: number }[] = [];
 let shakeAmp = 0;
+/** Chưởng ấn vàng + sóng xung kích (Hàng Long Thập Bát Chưởng). */
+const palms: { x: number; y: number; life: number; max: number; size: number }[] = [];
 
 function spawn(x: number, y: number, vx: number, vy: number, vz: number, life: number, size: number, grav: number, color: string) {
   const p = pool[cursor];
@@ -74,6 +76,22 @@ export const vfx = {
     bolts.push({ a: new THREE.Vector3(ax, ay, 0.5), b: new THREE.Vector3(bx, by, 0.5), life: 0.45, color: new THREE.Color('#B8A8FF') });
     flashes.push({ x: bx, y: by, life: 0.3, color: new THREE.Color('#8F7BE0'), power: 80 });
   },
+  /** Vảy vàng rơi theo thân rồng khi đạn tuyệt chiêu bay. */
+  dragonSpark(x: number, y: number) {
+    spawn(x, y, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, 0, 0.5 + Math.random() * 0.4, 0.12 + Math.random() * 0.12, -2, Math.random() < 0.5 ? '#FFD86B' : '#FFF3C4');
+  },
+  /** Chưởng ấn khổng lồ giáng xuống + sóng vàng + bụi rồng. */
+  dragonPalm(x: number, y: number, radius: number) {
+    const size = Math.max(4, radius * 1.6);
+    palms.push({ x, y, life: 1.1, max: 1.1, size });
+    for (let i = 0; i < 90; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const s = 6 + Math.random() * 16;
+      spawn(x, y + 1, Math.cos(a) * s, Math.abs(Math.sin(a)) * s * 0.9 + 2, (Math.random() - 0.5) * 8, 0.8 + Math.random() * 0.9, 0.18 + Math.random() * 0.3, 14, ['#FFD86B', '#FFB02E', '#FFF3C4', '#E8684A'][i % 4]);
+    }
+    flashes.unshift({ x, y, life: 0.6, color: new THREE.Color('#FFD86B'), power: 260 });
+    shakeAmp = Math.max(shakeAmp, 1.4);
+  },
   shake(a: number) {
     shakeAmp = Math.max(shakeAmp, a);
   },
@@ -85,6 +103,77 @@ export const vfx = {
 };
 
 const tmp = new THREE.Object3D();
+
+/** Hình bàn tay (lòng bàn tay + 5 ngón) dựng bằng Shape. */
+function palmShape() {
+  const sh = new THREE.Shape();
+  sh.moveTo(-0.5, -0.9);
+  sh.lineTo(0.5, -0.9);
+  sh.lineTo(0.55, 0.15);
+  const fingers = [
+    [0.38, 0.95, 0.13],
+    [0.13, 1.15, 0.13],
+    [-0.12, 1.1, 0.13],
+    [-0.36, 0.85, 0.12],
+  ];
+  for (const [fx, fy, w] of fingers) {
+    sh.lineTo(fx + w, 0.2);
+    sh.lineTo(fx + w, fy);
+    sh.absarc(fx, fy, w, 0, Math.PI, false);
+    sh.lineTo(fx - w, 0.2);
+  }
+  sh.lineTo(-0.55, 0.05);
+  sh.lineTo(-0.95, 0.45); // ngón cái
+  sh.absarc(-0.98, 0.32, 0.13, Math.PI * 0.25, Math.PI * 1.25, false);
+  sh.lineTo(-0.55, -0.4);
+  sh.lineTo(-0.5, -0.9);
+  return new THREE.ShapeGeometry(sh, 12);
+}
+
+function PalmLayer() {
+  const palmGeo = useMemo(palmShape, []);
+  const ringGeo = useMemo(() => new THREE.RingGeometry(0.8, 1, 48), []);
+  const items = useMemo(
+    () =>
+      Array.from({ length: 3 }, () => ({
+        palm: new THREE.Mesh(palmGeo, new THREE.MeshBasicMaterial({ color: '#FFD86B', transparent: true, depthWrite: false, toneMapped: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })),
+        ring: new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: '#FFF3C4', transparent: true, depthWrite: false, toneMapped: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })),
+      })),
+    [palmGeo, ringGeo],
+  );
+  useFrame((_, rawDt) => {
+    const dt = Math.min(rawDt, 0.05);
+    for (let i = palms.length - 1; i >= 0; i--) {
+      palms[i].life -= dt;
+      if (palms[i].life <= 0) palms.splice(i, 1);
+    }
+    items.forEach((it, i) => {
+      const p = palms[i];
+      it.palm.visible = it.ring.visible = !!p;
+      if (!p) return;
+      const t = 1 - p.life / p.max; // 0 → 1
+      // chưởng giáng từ trên xuống, phình ra rồi tan
+      const drop = Math.max(0, 1 - t * 5);
+      const sc = p.size * (0.6 + Math.min(1, t * 4) * 0.6 + t * 0.3);
+      it.palm.position.set(p.x, p.y + p.size * 0.6 + drop * 10, 1.2);
+      it.palm.scale.setScalar(sc);
+      (it.palm.material as THREE.MeshBasicMaterial).opacity = Math.min(1, (1 - t) * 1.6) * 0.85;
+      it.ring.position.set(p.x, p.y + 0.3, 1.1);
+      it.ring.scale.setScalar(p.size * (0.3 + t * 2.6));
+      (it.ring.material as THREE.MeshBasicMaterial).opacity = (1 - t) * 0.9;
+    });
+  });
+  return (
+    <>
+      {items.map((it, i) => (
+        <group key={i}>
+          <primitive object={it.palm} />
+          <primitive object={it.ring} />
+        </group>
+      ))}
+    </>
+  );
+}
 
 export function VfxLayer() {
   const mesh = useRef<THREE.InstancedMesh>(null);
@@ -164,6 +253,7 @@ export function VfxLayer() {
       <instancedMesh ref={mesh} args={[geo, undefined, MAX]} frustumCulled={false}>
         <meshBasicMaterial toneMapped={false} />
       </instancedMesh>
+      <PalmLayer />
       <pointLight ref={light} intensity={0} distance={30} decay={1.5} />
       <lineSegments ref={boltLine} geometry={boltGeo} frustumCulled={false}>
         <lineBasicMaterial color="#D8CCFF" toneMapped={false} />

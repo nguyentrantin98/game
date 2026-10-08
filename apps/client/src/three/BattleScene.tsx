@@ -110,6 +110,10 @@ function ReplayDriver() {
       if (res) {
         const sh = useBattle.getState().state?.players.find((p) => p.id === res.shooterId);
         if (sh) vfx.muzzle(sh.x + res.input.dir * MUZZLE_OFFSET.x, sh.y + MUZZLE_OFFSET.y, res.input.dir);
+        if (sh && res.input.mode === 'ult') {
+          sfx('roar');
+          pushFloater({ x: sh.x, y: sh.y + 4.5, text: '降龍十八掌', color: '#FFD86B', big: true });
+        }
       }
     }
     camFocus.active = false;
@@ -159,6 +163,7 @@ function ReplayDriver() {
         useBattle.setState({ terrainVersion: b.terrainVersion + 1 });
         if (imp.kind === 'heal') vfx.heal(imp.x, imp.y, imp.radius);
         else vfx.burst(imp.x, imp.y, imp.radius);
+        if (imp.kind === 'explode' && res.input.mode === 'ult') vfx.dragonPalm(imp.x, imp.y, imp.radius);
         sfx('boom');
         vibrate(imp.radius > 4 ? [30, 30, 60] : 50);
       } else if (imp.kind === 'chain') {
@@ -210,29 +215,192 @@ function ReplayDriver() {
   );
 }
 
-/** Quỹ đạo dự đoán — chỉ ở chế độ Luyện tập, lượt của mình. */
-function PreviewPath() {
-  const show = useBattle((s) => s.state?.mode === 'practice' && s.turn?.currentId === s.myId && !s.replay);
+const GRID = 5;
+
+/**
+ * Hỗ trợ ngắm (lượt của mình): lưới tọa độ 5 đơn vị tính từ nòng súng, quỹ đạo dự đoán,
+ * điểm rơi + khoảng cách, đổi đỏ khi điểm rơi trúng đối thủ.
+ */
+function AimGuide() {
+  const show = useBattle((s) => s.turn?.currentId === s.myId && !s.replay && !!s.myId);
   const angle = useBattle((s) => s.angle);
   const power = useBattle((s) => s.power);
   const facing = useBattle((s) => s.facing);
+  const shotMode = useBattle((s) => s.shotMode);
   const wind = useBattle((s) => s.state?.wind);
   const ver = useBattle((s) => s.terrainVersion);
-  const line = useMemo(() => {
+  const me = useBattle((s) => s.state?.players.find((p) => p.id === s.myId));
+  const mx = me?.x ?? 0;
+  const my = me?.y ?? 0;
+
+  const path = useMemo(() => {
     const g = new THREE.BufferGeometry();
-    const m = new THREE.LineDashedMaterial({ color: '#FFF3D6', dashSize: 0.6, gapSize: 0.5, transparent: true, opacity: 0.8 });
-    return new THREE.Line(g, m);
+    const m = new THREE.LineDashedMaterial({ color: '#FFF3D6', dashSize: 0.6, gapSize: 0.45, transparent: true, opacity: 0.9, toneMapped: false });
+    const l = new THREE.Line(g, m);
+    l.frustumCulled = false;
+    return l;
   }, []);
-  useEffect(() => {
+
+  const grid = useMemo(() => {
+    const v: number[] = [];
+    const c: number[] = [];
+    const minor = new THREE.Color('#FFF3D6');
+    const major = new THREE.Color('#FFC86B');
+    for (let k = -32; k <= 32; k++) {
+      const col = k % 2 === 0 ? major : minor;
+      v.push(k * GRID, -10, -0.2, k * GRID, 60, -0.2);
+      c.push(col.r, col.g, col.b, col.r, col.g, col.b);
+    }
+    for (let j = -2; j <= 12; j++) {
+      const col = j === 0 ? major : minor;
+      v.push(-160, j * GRID, -0.2, 160, j * GRID, -0.2);
+      c.push(col.r, col.g, col.b, col.r, col.g, col.b);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3));
+    const l = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.16, depthWrite: false }));
+    l.frustumCulled = false;
+    return l;
+  }, []);
+
+  const land = useMemo(() => {
     const b = useBattle.getState();
-    if (!show || !b.state || !b.myId) return;
-    const pts = predictPath(b.state, b.myId, { angle, power, dir: facing, mode: 'normal' });
+    if (!show || !b.state || !b.myId) return null;
+    const pts = predictPath(b.state, b.myId, { angle, power, dir: facing, mode: shotMode });
     const v: number[] = [];
     for (let i = 0; i < pts.length; i += 6) v.push(pts[i], pts[i + 1], 0.4);
-    line.geometry.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
-    line.computeLineDistances();
-  }, [show, angle, power, facing, wind, ver, line]);
-  return <primitive object={line} visible={show} />;
+    const n = pts.length / 2;
+    if (n < 2) return null;
+    const x = pts[(n - 1) * 2];
+    const y = pts[(n - 1) * 2 + 1];
+    v.push(x, y, 0.4);
+    path.geometry.setAttribute('position', new THREE.Float32BufferAttribute(v, 3));
+    path.computeLineDistances();
+    const myTeam = b.state.players.find((p) => p.id === b.myId)?.team;
+    const hit = b.state.players.some((p) => p.alive && p.team !== myTeam && Math.hypot(p.x - x, p.y + 1.1 - y) < 3);
+    return { x, y, hit };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show, angle, power, facing, shotMode, wind, ver, mx, my, path]);
+
+  useEffect(() => {
+    (path.material as THREE.LineDashedMaterial).color.set(land?.hit ? '#FF6B5A' : '#FFF3D6');
+  }, [land?.hit, path]);
+
+  if (!show || !me) return null;
+  const labels = Array.from({ length: 16 }, (_, i) => (i + 1) * 2 * GRID);
+  return (
+    <>
+      <primitive object={grid} position={[mx, my, 0]} />
+      {labels.map((d) => (
+        <Html key={d} position={[mx + facing * d, my - 1.2, 0]} center zIndexRange={[5, 0]} style={{ pointerEvents: 'none' }}>
+          <div className="text-[9px] font-semibold" style={{ color: '#FFC86B', opacity: 0.75, WebkitTextStroke: '2px #0b120e', paintOrder: 'stroke fill' }}>
+            {d}
+          </div>
+        </Html>
+      ))}
+      <primitive object={path} />
+      {land && (
+        <group position={[land.x, land.y, 0.5]}>
+          <mesh>
+            <ringGeometry args={[0.9, 1.15, 32]} />
+            <meshBasicMaterial color={land.hit ? '#FF6B5A' : '#FFF3D6'} transparent opacity={0.9} toneMapped={false} />
+          </mesh>
+          <mesh>
+            <circleGeometry args={[0.25, 16]} />
+            <meshBasicMaterial color={land.hit ? '#FF6B5A' : '#FFC86B'} toneMapped={false} />
+          </mesh>
+          <Html position={[0, 2, 0]} center zIndexRange={[6, 0]} style={{ pointerEvents: 'none' }}>
+            <div className="text-[11px] font-bold whitespace-nowrap" style={{ color: land.hit ? '#FF8A80' : '#FFF3D6', WebkitTextStroke: '2.5px #0b120e', paintOrder: 'stroke fill' }}>
+              {land.hit ? '🎯 TRÚNG · ' : ''}
+              {Math.abs(land.x - mx).toFixed(1)}
+            </div>
+          </Html>
+        </group>
+      )}
+    </>
+  );
+}
+
+const DRAGON = 40;
+const dragonGeo = new THREE.SphereGeometry(1, 10, 8);
+const dragonMat = new THREE.MeshBasicMaterial({ color: '#FFD86B', toneMapped: false });
+const dragonEyeMat = new THREE.MeshBasicMaterial({ color: '#FF3B2E', toneMapped: false });
+const gold = new THREE.Color('#FFD86B');
+const deep = new THREE.Color('#E88A1A');
+
+/** Rồng vàng uốn lượn bám theo đạn tuyệt chiêu (Hàng Long Thập Bát Chưởng). */
+function DragonTrail() {
+  const body = useRef<THREE.InstancedMesh>(null);
+  const head = useRef<THREE.Group>(null);
+  const o = useMemo(() => new THREE.Object3D(), []);
+  const c = useMemo(() => new THREE.Color(), []);
+  useFrame(() => {
+    const m = body.current;
+    const h = head.current;
+    if (!m || !h) return;
+    const { replay } = useBattle.getState();
+    const res = replay?.result;
+    let visible = false;
+    if (replay && res && res.input.mode === 'ult') {
+      const step = ((performance.now() - replay.t0) / 1000) * 60;
+      const tr = res.tracks[0];
+      const n = tr ? tr.points.length / 2 : 0;
+      const local = tr ? step - tr.startStep : -1;
+      if (tr && local >= 0 && local < n - 1) {
+        visible = true;
+        const at = (s: number) => {
+          const i = Math.max(0, Math.min(n - 2, Math.floor(s)));
+          const f = Math.max(0, Math.min(1, s - i));
+          return [tr.points[i * 2] * (1 - f) + tr.points[i * 2 + 2] * f, tr.points[i * 2 + 1] * (1 - f) + tr.points[i * 2 + 3] * f];
+        };
+        const t = performance.now() / 1000;
+        for (let k = 0; k < DRAGON; k++) {
+          const s = local - k * 0.9;
+          const [x, y] = at(s);
+          const [x2, y2] = at(s + 1);
+          let nx = -(y2 - y);
+          let ny = x2 - x;
+          const len = Math.hypot(nx, ny) || 1;
+          nx /= len;
+          ny /= len;
+          const wave = Math.sin(t * 9 - k * 0.45) * Math.min(1, k / 6) * 1.1;
+          const r = 0.75 * (1 - k / DRAGON) + 0.12;
+          o.position.set(x + nx * wave, y + ny * wave, 0.6 + Math.cos(t * 9 - k * 0.45) * 0.5);
+          o.scale.setScalar(s < 0 ? 0 : r);
+          o.updateMatrix();
+          m.setMatrixAt(k, o.matrix);
+          c.copy(gold).lerp(deep, k % 3 === 0 ? 0.6 : 0.1);
+          m.setColorAt(k, c);
+          if (k === 0) {
+            h.position.set(x, y, 0.6);
+            h.rotation.z = Math.atan2(y2 - y, x2 - x);
+          }
+          if (k % 8 === 0 && Math.random() < 0.5) vfx.dragonSpark(x + nx * wave, y + ny * wave);
+        }
+        m.instanceMatrix.needsUpdate = true;
+        if (m.instanceColor) m.instanceColor.needsUpdate = true;
+      }
+    }
+    m.visible = h.visible = visible;
+  });
+  return (
+    <>
+      <instancedMesh ref={body} args={[dragonGeo, dragonMat, DRAGON]} frustumCulled={false} visible={false} />
+      <group ref={head} visible={false}>
+        <mesh geometry={dragonGeo} material={dragonMat} scale={[1.3, 0.95, 0.95]} />
+        <mesh geometry={dragonGeo} material={dragonMat} position={[0.9, -0.25, 0]} scale={[0.7, 0.4, 0.5]} />
+        <mesh geometry={dragonGeo} material={dragonEyeMat} position={[0.55, 0.35, 0.55]} scale={0.18} />
+        <mesh geometry={dragonGeo} material={dragonEyeMat} position={[0.55, 0.35, -0.55]} scale={0.18} />
+        <mesh material={dragonMat} position={[-0.4, 1.0, 0.3]} rotation={[0, 0, 0.6]}>
+          <coneGeometry args={[0.15, 0.9, 6]} />
+        </mesh>
+        <mesh material={dragonMat} position={[-0.4, 1.0, -0.3]} rotation={[0, 0, 0.6]}>
+          <coneGeometry args={[0.15, 0.9, 6]} />
+        </mesh>
+      </group>
+    </>
+  );
 }
 
 function Floaters() {
@@ -301,7 +469,8 @@ export function BattleScene() {
       <TerrainMesh />
       {players?.map((p) => <Fighter key={p.id} p={p} />)}
       <ReplayDriver />
-      <PreviewPath />
+      <AimGuide />
+      <DragonTrail />
       <Floaters />
       <VfxLayer />
       <CameraRig />

@@ -57,6 +57,14 @@ const defs = {
       const f = t < 0.2 ? 523 : t < 0.4 ? 659 : t < 0.6 ? 784 : 1047;
       return Math.sin(2 * Math.PI * f * t) * 0.35 * Math.exp(-((t % 0.2) * 3));
     }),
+  roar: () => {
+    let lp = 0;
+    return synth(1.4, (t) => {
+      lp += (noise() - lp) * 0.05;
+      const f = 90 + Math.sin(t * 9) * 25 - t * 30;
+      return (Math.sin(2 * Math.PI * f * t) * 0.5 + Math.sin(2 * Math.PI * f * 1.5 * t) * 0.25 + lp * 1.4) * Math.min(1, t * 8) * Math.exp(-t * 1.8);
+    });
+  },
   lose: () => synth(0.8, (t) => Math.sin(2 * Math.PI * (330 - t * 160) * t) * 0.35 * Math.exp(-t * 2)),
 };
 

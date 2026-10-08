@@ -1,0 +1,29 @@
+{
+  "id": "gau",
+  "order": 1,
+  "name": "Gấu",
+  "role": "PHÁO BINH",
+  "weapon": "Bazooka",
+  "skill": "Đạn hố sâu",
+  "desc": "vụ nổ bán kính lớn, khoét sâu địa hình dưới chân địch.",
+  "colors": {
+    "color": "#C8643E",
+    "dark": "#6E2E18",
+    "bg": "#2B1D17"
+  },
+  "stats": {
+    "hp": 9,
+    "atk": 9,
+    "rng": 4,
+    "wind": 8
+  },
+  "maxHp": 1130,
+  "damage": 390,
+  "radius": 4.88,
+  "windK": 1.333,
+  "speedK": 0.97,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "crater"
+}

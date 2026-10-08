@@ -1,0 +1,4 @@
+**/node_modules
+**/dist
+apps/client/e2e/screenshots
+apps/client/test-results

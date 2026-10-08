@@ -1,0 +1,238 @@
+@import 'tailwindcss';
+
+/* ── Design tokens (lấy từ docs/design/army3d-design.html) ── */
+@theme {
+  --color-bg: #0f1a14;
+  --color-panel: #15221a;
+  --color-line: #2a3b2f;
+  --color-track: #24342a;
+  --color-ink: #e9efe6;
+  --color-ink-2: #b9c8bc;
+  --color-ink-3: #9fb2a3;
+  --color-accent: #f2a93b;
+  --color-accent-hi: #ffc86b;
+  --color-cyan: #5cc8e0;
+  --color-red: #e8684a;
+  --color-lime: #9bd35a;
+  --color-gold: #d9a84a;
+  --font-display: 'Chakra Petch', 'Noto Sans SC', sans-serif;
+  --font-body: 'Be Vietnam Pro', 'Noto Sans SC', system-ui, sans-serif;
+  --font-han: 'ZCOOL QingKe HuangYou', 'Noto Sans SC', serif;
+}
+
+:root {
+  --ui-scale: 1;
+  --adm-color-primary: #f2a93b;
+  --adm-color-background: #15221a;
+  --adm-color-text: #e9efe6;
+  --adm-color-text-secondary: #9fb2a3;
+  --adm-color-border: #2a3b2f;
+  --adm-color-box: #24342a;
+  --adm-border-color: #2a3b2f;
+  --adm-font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0f1a14;
+  color: #e9efe6;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ── Chữ có viền (stroke) kiểu game ── */
+.text-stroke {
+  -webkit-text-stroke: 3px #3b2208;
+  paint-order: stroke fill;
+}
+.text-stroke-dark {
+  -webkit-text-stroke: 3px #0b120e;
+  paint-order: stroke fill;
+}
+
+/* ── Panel 9-slice: border-image co giãn không vỡ góc ── */
+.panel-9 {
+  border: 10px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30'%3E%3Crect x='1' y='1' width='28' height='28' rx='6' fill='%2315221A' stroke='%232A3B2F' stroke-width='2'/%3E%3Cpath d='M1 9V7a6 6 0 0 1 6-6h2M21 1h2a6 6 0 0 1 6 6v2M29 21v2a6 6 0 0 1-6 6h-2M9 29H7a6 6 0 0 1-6-6v-2' fill='none' stroke='%23F2A93B' stroke-width='2'/%3E%3C/svg%3E")
+    10 fill / 10px stretch;
+}
+
+/* ── Nút "đầy đặn": gradient 2 tầng + viền sáng trên + bóng đáy ── */
+.btn-game {
+  position: relative;
+  border: 0;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #2a1606;
+  background: linear-gradient(180deg, #ffd88a 0%, #f2a93b 48%, #d98a1c 52%, #e99a2c 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.65),
+    inset 0 -3px 0 rgba(120, 60, 0, 0.45),
+    0 4px 0 #7a4a0e,
+    0 6px 14px rgba(0, 0, 0, 0.45);
+  transition: filter 0.15s;
+}
+.btn-game:disabled {
+  filter: grayscale(0.9) brightness(0.7);
+  cursor: not-allowed;
+}
+.btn-game.secondary {
+  color: #e9efe6;
+  background: linear-gradient(180deg, #3d5a47 0%, #2a3f31 50%, #20322a 52%, #26392d 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    0 4px 0 #0c140f,
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+.btn-game.danger {
+  color: #fff;
+  background: linear-gradient(180deg, #ff9a7c 0%, #e8684a 48%, #c84a2c 52%, #d65a3c 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -3px 0 rgba(90, 20, 0, 0.45),
+    0 4px 0 #6e2416,
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+/* ── Icon tròn viền vàng (cột chức năng lobby) ── */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 30%, #2c4434, #15221a 70%);
+  border: 1.5px solid #f2a93b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 3px 0 #0b120e;
+  color: #ffc86b;
+}
+
+/* ── Chấm đỏ 红点 ── */
+.red-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff8a80, #e53935 60%);
+  border: 1.5px solid #fff3e0;
+  box-shadow: 0 0 6px rgba(229, 57, 53, 0.8);
+  animation: dotPulse 1.6s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+/* ── Slider kiểu game ── */
+input[type='range'].game-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f2a93b var(--fill, 50%), #24342a var(--fill, 50%));
+  outline: none;
+}
+input[type='range'].game-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #fff3d6, #f2a93b 60%, #b06e12);
+  border: 2px solid #3b2208;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+input[type='range'].game-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f2a93b;
+  border: 2px solid #3b2208;
+}
+
+/* ── Marquee 跑马灯 ── */
+.marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: marquee 18s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.shine {
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: shine 2.4s ease-in-out infinite;
+}
+@keyframes shine {
+  0% {
+    background-position: 130% 0;
+  }
+  100% {
+    background-position: -130% 0;
+  }
+}
+
+.float-dmg {
+  font-family: var(--font-display);
+  font-weight: 700;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: floatUp 1.3s ease-out forwards;
+}
+@keyframes floatUp {
+  0% {
+    transform: translate(-50%, 0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -14px) scale(1.25);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -56px) scale(1);
+    opacity: 0;
+  }
+}
+
+.shake {
+  animation: shake 0.4s linear infinite;
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(2deg);
+  }
+}

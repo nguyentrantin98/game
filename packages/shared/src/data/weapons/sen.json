@@ -1,0 +1,29 @@
+{
+  "id": "sen",
+  "order": 7,
+  "name": "Sen",
+  "role": "QUÂN Y",
+  "weapon": "Pháo dược",
+  "skill": "Mưa hồi phục",
+  "desc": "hồi máu đồng đội trong vùng nổ, gây sát thương nhẹ.",
+  "colors": {
+    "color": "#4FC4A8",
+    "dark": "#1E6A58",
+    "bg": "#152723"
+  },
+  "stats": {
+    "hp": 7,
+    "atk": 4,
+    "rng": 6,
+    "wind": 5
+  },
+  "maxHp": 990,
+  "damage": 240,
+  "radius": 3.08,
+  "windK": 0.833,
+  "speedK": 1.03,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "heal"
+}

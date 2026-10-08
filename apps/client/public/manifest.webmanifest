@@ -1,0 +1,10 @@
+{
+  "name": "Army 3D · Pháo Chiến Đội",
+  "short_name": "Army 3D",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0F1A14",
+  "theme_color": "#0F1A14",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

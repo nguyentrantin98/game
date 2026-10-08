@@ -1,0 +1,29 @@
+{
+  "id": "chop",
+  "order": 6,
+  "name": "Chớp",
+  "role": "ĐIỆN",
+  "weapon": "Cuộn Tesla",
+  "skill": "Xích sét",
+  "desc": "sét lan sang mục tiêu thứ 2 trong bán kính gần.",
+  "colors": {
+    "color": "#8F7BE0",
+    "dark": "#43358C",
+    "bg": "#1E1B2C"
+  },
+  "stats": {
+    "hp": 5,
+    "atk": 7,
+    "rng": 6,
+    "wind": 4
+  },
+  "maxHp": 850,
+  "damage": 330,
+  "radius": 3.44,
+  "windK": 0.667,
+  "speedK": 1.03,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "chain"
+}

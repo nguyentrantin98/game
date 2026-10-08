@@ -1,0 +1,29 @@
+{
+  "id": "sam",
+  "order": 0,
+  "name": "Sấm",
+  "role": "XẠ THỦ",
+  "weapon": "Súng trường pháo",
+  "skill": "Loạt đôi",
+  "desc": "bắn 2 viên liên tiếp, cân bằng, dễ chơi nhất.",
+  "colors": {
+    "color": "#E0A23C",
+    "dark": "#8A5A16",
+    "bg": "#2A2617"
+  },
+  "stats": {
+    "hp": 6,
+    "atk": 6,
+    "rng": 6,
+    "wind": 6
+  },
+  "maxHp": 920,
+  "damage": 300,
+  "radius": 3.32,
+  "windK": 1.0,
+  "speedK": 1.03,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "double"
+}

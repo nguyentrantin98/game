@@ -1,0 +1,29 @@
+{
+  "id": "tacke",
+  "order": 2,
+  "name": "Tắc Kè",
+  "role": "LỰU ĐẠN",
+  "weapon": "Lựu đạn nảy",
+  "skill": "Nảy ba lần",
+  "desc": "đạn nảy trên địa hình, nổ ở lần chạm thứ ba.",
+  "colors": {
+    "color": "#7DBF4E",
+    "dark": "#3D6A20",
+    "bg": "#1C2716"
+  },
+  "stats": {
+    "hp": 6,
+    "atk": 7,
+    "rng": 5,
+    "wind": 5
+  },
+  "maxHp": 920,
+  "damage": 330,
+  "radius": 3.44,
+  "windK": 0.833,
+  "speedK": 1.0,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "bounce3"
+}

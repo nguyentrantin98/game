@@ -1,0 +1,29 @@
+{
+  "id": "phuong",
+  "order": 5,
+  "name": "Phượng",
+  "role": "HỎA TIỄN",
+  "weapon": "Giàn tên lửa",
+  "skill": "Mưa tên lửa",
+  "desc": "tên lửa tách 3 đầu đạn ở đỉnh quỹ đạo.",
+  "colors": {
+    "color": "#E2577A",
+    "dark": "#7E2139",
+    "bg": "#2A1820"
+  },
+  "stats": {
+    "hp": 5,
+    "atk": 8,
+    "rng": 7,
+    "wind": 7
+  },
+  "maxHp": 850,
+  "damage": 360,
+  "radius": 3.56,
+  "windK": 1.167,
+  "speedK": 1.06,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "split3"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "ocvit",
+  "order": 4,
+  "name": "Ốc Vít",
+  "role": "KỸ SƯ",
+  "weapon": "Súng đinh + drone",
+  "skill": "Khiên năng lượng",
+  "desc": "dựng tường chắn 1 lượt, drone bắn bồi 1 phát nhỏ.",
+  "colors": {
+    "color": "#D9C24A",
+    "dark": "#7A6914",
+    "bg": "#27261A"
+  },
+  "stats": {
+    "hp": 7,
+    "atk": 5,
+    "rng": 6,
+    "wind": 6
+  },
+  "maxHp": 990,
+  "damage": 270,
+  "radius": 3.2,
+  "windK": 1.0,
+  "speedK": 1.03,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "shield"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "dieuhau",
+  "order": 3,
+  "name": "Diều Hâu",
+  "role": "BẮN TỈA",
+  "weapon": "Súng tỉa",
+  "skill": "Đạn xuyên gió",
+  "desc": "đạn gần như thẳng, gió chỉ ảnh hưởng 30%.",
+  "colors": {
+    "color": "#5BA8C9",
+    "dark": "#245C75",
+    "bg": "#16232A"
+  },
+  "stats": {
+    "hp": 4,
+    "atk": 8,
+    "rng": 9,
+    "wind": 2
+  },
+  "maxHp": 780,
+  "damage": 360,
+  "radius": 3.56,
+  "windK": 0.333,
+  "speedK": 1.12,
+  "delay": 600,
+  "heavyDelay": 850,
+  "ultDelay": 1000,
+  "ult": "pierce"
+}

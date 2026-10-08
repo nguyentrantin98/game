@@ -1,0 +1,22 @@
+# Chạy toàn bộ: docker compose up --build  →  http://localhost:8080
+# postgres/redis đã khai báo sẵn cho bước chuyển kho dữ liệu (hiện server lưu trong bộ nhớ).
+services:
+  server:
+    build: { context: ., dockerfile: apps/server/Dockerfile }
+    environment:
+      PORT: 3000
+      JWT_SECRET: change-me-in-prod
+    ports: ['3000:3000']
+  client:
+    build: { context: ., dockerfile: apps/client/Dockerfile }
+    environment:
+      API_URL: http://server:3000
+    ports: ['8080:4173']
+    depends_on: [server]
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_PASSWORD: army3d, POSTGRES_DB: army3d }
+    ports: ['5432:5432']
+  redis:
+    image: redis:7-alpine
+    ports: ['6379:6379']
